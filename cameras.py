@@ -47,6 +47,7 @@ class ExternalCamera():
 # this camera moves with the robot during the simulation
 class OnboardCamera():
 
+	# the cameraDistance is the distance from the camera to its focal point
 	# the cameraOffsetPosition is the displacement between the end-effector and the camera
 	# the cameraOffsetQuaternion is the rotation between the end-effector and the camera
 	def __init__(self, cameraDistance=0.2, cameraOffsetPosition=[0.05, 0.0, 0.0], cameraOffsetQuaternion=p.getQuaternionFromEuler([0, -np.pi/2, 0]), cameraWidth=256, cameraHeight=256):
@@ -68,16 +69,16 @@ class OnboardCamera():
 
 		# update the camera position and orientation as the robot moves
 		cam_pos, cam_orn = p.multiplyTransforms(ee_position,
-																							ee_quaternion,
-																							self.cameraOffsetPosition,
-																							self.cameraOffsetQuaternion)
+												ee_quaternion,
+												self.cameraOffsetPosition,
+												self.cameraOffsetQuaternion)
 		rot_mat = np.array(p.getMatrixFromQuaternion(cam_orn)).reshape(3, 3)
 		cam_forward = rot_mat @ np.array([1, 0, 0])
 		cam_up = rot_mat @ np.array([0, 0, 1])
 
 		view_matrix = p.computeViewMatrix(cameraEyePosition=cam_pos,
-																				cameraTargetPosition=cam_pos + self.cameraDistance * cam_forward,
-																				cameraUpVector=cam_up)
+											cameraTargetPosition=cam_pos + self.cameraDistance * cam_forward,
+											cameraUpVector=cam_up)
 
 		_, _, rgba, _, _ = p.getCameraImage(width=self.cameraWidth,
 												height=self.cameraHeight,

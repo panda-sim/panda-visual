@@ -17,10 +17,6 @@ p.resetDebugVisualizerCamera(cameraDistance=config.cameraDistance,
                                 cameraPitch=config.cameraPitch, 
                                 cameraTargetPosition=config.cameraTargetPosition)
 
-# add additional cameras
-external_camera = ExternalCamera()
-onboard_camera = OnboardCamera()
-
 # load the objects
 urdfRootPath = pybullet_data.getDataPath()
 plane = p.loadURDF(os.path.join(urdfRootPath, "plane.urdf"), basePosition=[0, 0, -0.625])
@@ -32,12 +28,16 @@ panda = Panda(basePosition=config.baseStartPosition,
                 baseOrientation=p.getQuaternionFromEuler(config.baseStartOrientationE),
                 jointStartPositions=config.jointStartPositions)
 
+# add additional cameras
+external_camera = ExternalCamera()
+onboard_camera = OnboardCamera()
+
 # run simluation
 timestep = 0
 while True:
     # record images to "images" folder
     if timestep % 10 == 0:
-        # we use the robot's state to position the onboard camera
+        # we use the robot's state to update the pose of the onboard camera
         state = panda.get_state()
         image1 = external_camera.get_image()
         image2 = onboard_camera.get_image(ee_position=state["ee-position"], ee_quaternion=state["ee-quaternion"])
